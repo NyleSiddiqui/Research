@@ -106,8 +106,8 @@ while running:
                 start = time.time()
             else:
                 wrong += 1
-                print(wrong)
+                # print(wrong)
         else:
             wrong += 1 #TODO: Penalizes user for click outside box. Subject to change
-            print(wrong)
+            # print(wrong)
 # sys.stdout.close()

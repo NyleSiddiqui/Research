@@ -37,47 +37,67 @@ while running:
     event = pygame.event.poll()
     if event.type == pygame.QUIT:
         running = False
-    # if event.type == pygame.MOUSEMOTION:
-    #     print(event.pos)
+    if event.type == pygame.MOUSEMOTION:
+        print(event.pos)
     elif event.type == pygame.MOUSEBUTTONDOWN:
         # print(event.pos)
         # print("center: {}, {}".format(rect_x_origin + width / 2, rect_y_origin + height / 2))
-        while not flag:
-            if rect_y_origin + height > event.pos[1] > rect_y_origin and rect_x_origin + width > event.pos[0] > rect_x_origin:
-                if pygame.mouse.get_pressed()[0] and det_button == 0:
-                    print("{} {}".format(pygame.mouse.get_pressed(), wrong))
-                    print(pygame.mouse.get_pressed())
-                    screen.fill((0, 0, 0))
-                    rect_x_origin = random.randint(200, 600)
-                    rect_y_origin = random.randint(200, 400)
-                    pygame.draw.rect(screen, (0, 0, 255), ((rect_x_origin, rect_y_origin), (width, height)))
-                    flag = True
-                elif pygame.mouse.get_pressed()[1] and det_button == 1:
-                    print("{} {}".format(pygame.mouse.get_pressed(), wrong))
-                    print(pygame.mouse.get_pressed())
-                    screen.fill((0, 0, 0))
-                    rect_x_origin = random.randint(200, 600)
-                    rect_y_origin = random.randint(200, 400)
-                    pygame.draw.rect(screen, (0, 0, 255), ((rect_x_origin, rect_y_origin), (width, height)))
-                    flag = True
-                elif pygame.mouse.get_pressed()[2] and det_button == 2:
-                    print("{} {}".format(pygame.mouse.get_pressed(), wrong))
-                    screen.fill((0, 0, 0))
-                    rect_x_origin = random.randint(200, 600)
-                    rect_y_origin = random.randint(200, 400)
-                    pygame.draw.rect(screen, (0, 0, 255), ((rect_x_origin, rect_y_origin), (width, height)))
-                    flag = True
-            event = pygame.event.wait()
-        flag = False
-        det_button = random.randint(0, 2)
-        if det_button == 0:
-            screen.blit(font.render('L', True, (255, 255, 255)),
-                        (rect_x_origin + (width / 2.5), rect_y_origin + height / 5))
-        elif det_button == 1:
-            screen.blit(font.render('M', True, (255, 255, 255)),
-                        (rect_x_origin + (width / 2.5), rect_y_origin + height / 5))
-        elif det_button == 2:
-            screen.blit(font.render('R', True, (255, 255, 255)),
-                        (rect_x_origin + (width / 2.5), rect_y_origin + height / 5))
-
+        if rect_y_origin + height > event.pos[1] > rect_y_origin and rect_x_origin + width > event.pos[0] > rect_x_origin:
+            if pygame.mouse.get_pressed()[0] and det_button == 0:
+                print("{} {}".format(pygame.mouse.get_pressed(), wrong))
+                print(pygame.mouse.get_pressed())
+                wrong = 0
+                screen.fill((0, 0, 0))
+                rect_x_origin = random.randint(200, 600)
+                rect_y_origin = random.randint(200, 400)
+                pygame.draw.rect(screen, (0, 0, 255), ((rect_x_origin, rect_y_origin), (width, height)))
+                det_button = random.randint(0, 2)
+                if det_button == 0:
+                    screen.blit(font.render('L', True, (255, 255, 255)),
+                                (rect_x_origin + (width / 2.5), rect_y_origin + height / 5))
+                elif det_button == 1:
+                    screen.blit(font.render('M', True, (255, 255, 255)),
+                                (rect_x_origin + (width / 2.5), rect_y_origin + height / 5))
+                elif det_button == 2:
+                    screen.blit(font.render('R', True, (255, 255, 255)),
+                                (rect_x_origin + (width / 2.5), rect_y_origin + height / 5))
+            elif pygame.mouse.get_pressed()[1] and det_button == 1:
+                print("{} {}".format(pygame.mouse.get_pressed(), wrong))
+                print(pygame.mouse.get_pressed())
+                wrong = 0
+                screen.fill((0, 0, 0))
+                rect_x_origin = random.randint(200, 600)
+                rect_y_origin = random.randint(200, 400)
+                pygame.draw.rect(screen, (0, 0, 255), ((rect_x_origin, rect_y_origin), (width, height)))
+                det_button = random.randint(0, 2)
+                if det_button == 0:
+                    screen.blit(font.render('L', True, (255, 255, 255)),
+                                (rect_x_origin + (width / 2.5), rect_y_origin + height / 5))
+                elif det_button == 1:
+                    screen.blit(font.render('M', True, (255, 255, 255)),
+                                (rect_x_origin + (width / 2.5), rect_y_origin + height / 5))
+                elif det_button == 2:
+                    screen.blit(font.render('R', True, (255, 255, 255)),
+                                (rect_x_origin + (width / 2.5), rect_y_origin + height / 5))
+            elif pygame.mouse.get_pressed()[2] and det_button == 2:
+                print("{} {}".format(pygame.mouse.get_pressed(), wrong))
+                wrong = 0
+                screen.fill((0, 0, 0))
+                rect_x_origin = random.randint(200, 600)
+                rect_y_origin = random.randint(200, 400)
+                pygame.draw.rect(screen, (0, 0, 255), ((rect_x_origin, rect_y_origin), (width, height)))
+                det_button = random.randint(0, 2)
+                if det_button == 0:
+                    screen.blit(font.render('L', True, (255, 255, 255)),
+                                (rect_x_origin + (width / 2.5), rect_y_origin + height / 5))
+                elif det_button == 1:
+                    screen.blit(font.render('M', True, (255, 255, 255)),
+                                (rect_x_origin + (width / 2.5), rect_y_origin + height / 5))
+                elif det_button == 2:
+                    screen.blit(font.render('R', True, (255, 255, 255)),
+                                (rect_x_origin + (width / 2.5), rect_y_origin + height / 5))
+            else:
+                wrong += 1
+        else:
+            wrong += 1 #TODO: Penalizes user for click outside box. Subject to change
 # sys.stdout.close()

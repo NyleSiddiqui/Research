@@ -36,7 +36,7 @@ while running:
     event = pygame.event.wait()
     if event.type == pygame.QUIT:
         running = False
-    elif event.type == pygame.MOUSEBUTTONDOWN and textRect2.left < event.pos[0] < textRect2.right and textRect2.top < event.pos[1] < textRect2.bottom:
+    elif event.type == pygame.MOUSEBUTTONDOWN and textRect2.left < event.pos[0] < textRect2.right and textRect2.top < event.pos[1] < textRect2.bottom and pygame.mouse.get_pressed()[0]:
         det_button = random.randint(0, 2)
         width = 50
         height = 50
@@ -61,7 +61,7 @@ while running:
             if event.type == pygame.MOUSEMOTION:
                 print(event.pos)
             elif event.type == pygame.MOUSEBUTTONDOWN:
-                if rect_y_origin + height > event.pos[1] > rect_y_origin and rect_x_origin + width > event.pos[0] > rect_x_origin:
+                if square.bottom > event.pos[1] > square.top and square.right > event.pos[0] > square.left:
                     if pygame.mouse.get_pressed()[0] and det_button == 0:
                         end = time.time()
                         print("{} {}".format(pygame.mouse.get_pressed(), wrong))
@@ -70,7 +70,7 @@ while running:
                         screen.fill((0, 0, 0))
                         rect_x_origin = random.randint(200, 600)
                         rect_y_origin = random.randint(200, 400)
-                        pygame.draw.rect(screen, (0, 0, 255), ((rect_x_origin, rect_y_origin), (width, height)))
+                        square = pygame.draw.rect(screen, (0, 0, 255), ((rect_x_origin, rect_y_origin), (width, height)))
                         det_button = random.randint(0, 2)
                         if det_button == 0:
                             screen.blit(font.render('L', True, (255, 255, 255)),
@@ -90,7 +90,7 @@ while running:
                         screen.fill((0, 0, 0))
                         rect_x_origin = random.randint(200, 600)
                         rect_y_origin = random.randint(200, 400)
-                        pygame.draw.rect(screen, (0, 0, 255), ((rect_x_origin, rect_y_origin), (width, height)))
+                        square = pygame.draw.rect(screen, (0, 0, 255), ((rect_x_origin, rect_y_origin), (width, height)))
                         det_button = random.randint(0, 2)
                         if det_button == 0:
                             screen.blit(font.render('L', True, (255, 255, 255)),
@@ -110,7 +110,7 @@ while running:
                         screen.fill((0, 0, 0))
                         rect_x_origin = random.randint(200, 600)
                         rect_y_origin = random.randint(200, 400)
-                        pygame.draw.rect(screen, (0, 0, 255), ((rect_x_origin, rect_y_origin), (width, height)))
+                        square = pygame.draw.rect(screen, (0, 0, 255), ((rect_x_origin, rect_y_origin), (width, height)))
                         det_button = random.randint(0, 2)
                         if det_button == 0:
                             screen.blit(font.render('L', True, (255, 255, 255)),

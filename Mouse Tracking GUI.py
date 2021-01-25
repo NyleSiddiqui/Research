@@ -5,7 +5,7 @@ import numpy as np
 from pygame.locals import *
 import time
 
-# sys.stdout = open("Subject 0.txt", 'w')
+sys.stdout = open("Subject 0.txt", 'w')
 
 ### SETTINGS ###
 random.seed(69)             # SAME TEST FOR EVERYONE?
@@ -78,7 +78,7 @@ while running:                                                                  
                 running = False
                 flag = False
             if event.type == pygame.MOUSEMOTION:
-                print(event.pos, -1, -1, -1, (-1, -1))
+                print(event.pos, -1, -1, -1, (-1, -1), ';')
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if square.bottom > event.pos[1] > square.top and square.right > event.pos[0] > square.left:             # If user clicked in the square
                     if (pygame.mouse.get_pressed()[0] and det_button == 0) \
@@ -88,7 +88,7 @@ while running:                                                                  
                         print("{} {} {}".format(event.pos, np.argmax(pygame.mouse.get_pressed()), wrong), end=" ")
                         print("%.6f" % (end - start), end=" ")
                         center = (abs(square.centerx - event.pos[0]), abs(square.centery - event.pos[1]))
-                        print(center)
+                        print(center, ';')
                         wrong = 0
                         screen.fill((0, 0, 0))
                         ### Increase randomization of square spawn location ###                                         # TODO: Formal algorithm to implement better randomization?
@@ -132,4 +132,4 @@ while running:                                                                  
                         wrong += 1
                 else:
                     wrong += 1                                                                                          # TODO: Penalizes user for click outside box. Subject to change?
-# sys.stdout.close()
+sys.stdout.close()

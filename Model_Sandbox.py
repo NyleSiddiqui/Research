@@ -7,3 +7,4 @@ from tensorflow.keras import layers, Sequential
 from sklearn.model_selection import train_test_split
 
 model = Sequential()
+model.add(layers.)

@@ -78,14 +78,14 @@ while running:                                                                  
                 running = False
                 flag = False
             if event.type == pygame.MOUSEMOTION:
-                print(event.pos)
+                print(event.pos, -1, -1, -1, (-1, -1))
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if square.bottom > event.pos[1] > square.top and square.right > event.pos[0] > square.left:             # If user clicked in the square
                     if (pygame.mouse.get_pressed()[0] and det_button == 0) \
                             or (pygame.mouse.get_pressed()[1] and det_button == 1) \
                             or (pygame.mouse.get_pressed()[2] and det_button == 2):                                     # If the user clicked with the correct button
                         end = time.time()
-                        print("{} {}".format(np.argmax(pygame.mouse.get_pressed()), wrong), end=" ")
+                        print("{} {} {}".format(event.pos, np.argmax(pygame.mouse.get_pressed()), wrong), end=" ")
                         print("%.6f" % (end - start), end=" ")
                         center = (abs(square.centerx - event.pos[0]), abs(square.centery - event.pos[1]))
                         print(center)

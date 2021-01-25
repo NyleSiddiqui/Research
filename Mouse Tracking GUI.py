@@ -5,7 +5,7 @@ import numpy as np
 from pygame.locals import *
 import time
 
-sys.stdout = open("Subject 0.txt", 'w')
+sys.stdout = open("Subject0.txt", 'w')
 
 ### SETTINGS ###
 random.seed(69)             # SAME TEST FOR EVERYONE?

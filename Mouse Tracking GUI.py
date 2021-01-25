@@ -5,7 +5,7 @@ import numpy as np
 from pygame.locals import *
 import time
 
-sys.stdout = open("Subject 0.txt", 'w')
+# sys.stdout = open("Subject 0.txt", 'w')
 
 ### SETTINGS ###
 random.seed(69)             # SAME TEST FOR EVERYONE?
@@ -67,6 +67,7 @@ while running:                                                                  
         elif det_button == 2:
             screen.blit(font.render('R', True, (255, 255, 255)),
                         (rect_x_origin + (width / 2.5), rect_y_origin + height / 5))
+        # pygame.draw.circle(surface=screen, color=(0, 0, 0), center=(square.centerx, square.centery), radius=3, width=3) # Click as close to the center as possible?
         pygame.display.update()
         start = time.time()
         ### /Draw initial square ###
@@ -84,8 +85,10 @@ while running:                                                                  
                             or (pygame.mouse.get_pressed()[1] and det_button == 1) \
                             or (pygame.mouse.get_pressed()[2] and det_button == 2):                                     # If the user clicked with the correct button
                         end = time.time()
-                        print("{} {}".format(np.argmax(pygame.mouse.get_pressed()), wrong))
-                        print("%.6f" % (end - start))
+                        print("{} {}".format(np.argmax(pygame.mouse.get_pressed()), wrong), end=" ")
+                        print("%.6f" % (end - start), end=" ")
+                        center = (abs(square.centerx - event.pos[0]), abs(square.centery - event.pos[1]))
+                        print(center)
                         wrong = 0
                         screen.fill((0, 0, 0))
                         ### Increase randomization of square spawn location ###                                         # TODO: Formal algorithm to implement better randomization?
@@ -129,4 +132,4 @@ while running:                                                                  
                         wrong += 1
                 else:
                     wrong += 1                                                                                          # TODO: Penalizes user for click outside box. Subject to change?
-sys.stdout.close()
+# sys.stdout.close()

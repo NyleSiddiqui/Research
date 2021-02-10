@@ -9,7 +9,7 @@ from sklearn.model_selection import train_test_split
 
 
 if __name__ == '__main__':
-	df = pd.read_csv("Subject0.csv", delimiter=';', skiprows=1, skip)
+	df = pd.read_csv("Subject0.csv", delimiter=';', skiprows=1)
 	print(df.head())
 	X = df.iloc[1:3]
 	# y = df.loc[:, 1]

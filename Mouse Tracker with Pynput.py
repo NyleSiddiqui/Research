@@ -1,4 +1,5 @@
 from pynput import mouse
+import PySimpleGUI as gui
 import sys
 import time
 global start
@@ -21,7 +22,7 @@ def on_click(x, y, button, pressed):
 		end = time.time()
 		print((x, y), button, end-start, (start_location[0] - x, start_location[1] - y))
 		start = time.time()
-	
+
 
 def on_scroll(x, y, dx, dy):
 	if dy > 0:
@@ -30,11 +31,12 @@ def on_scroll(x, y, dx, dy):
 		print((x, y), "down", -1, (-1, -1))
 
 if __name__ == '__main__':
-	sys.stdout = open("Subject0.txt", 'w')
+	# sys.stdout = open("Subject0.txt", 'w')
+	gui.Window(title="Mouse Tracker", layout=[[]], margins=(300, 250)).read()
 	start_switch = 0
 	start = time.time()
 	now = time.time()
-	future = now + 3
+	future = now + 2
 	listener = mouse.Listener(
 		on_move=on_move,
 		on_click=on_click,
@@ -43,5 +45,5 @@ if __name__ == '__main__':
 	while time.time() < future:
 		continue
 	listener.stop()
-	sys.stdout.close()
+	# sys.stdout.close()
 

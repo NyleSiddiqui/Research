@@ -1,10 +1,14 @@
 import numpy as np
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '1'                                                                                #Shut the fuck up Tensorflow
 import tensorflow as tf
 import pandas as pd
 import matplotlib as plt
 from tensorflow import keras
 from tensorflow.keras import layers, Sequential
 from sklearn.model_selection import train_test_split
+
+
 
 
 
@@ -17,10 +21,7 @@ if __name__ == '__main__':
 
 	model = keras.Sequential(
 		[
-			layers.Dense(20, input_dim=4, activation="relu"),
-			
-			
-			
+			layers.Dense(20, input_dim=6, activation="relu"),
 			layers.Dense(35, activation='Softmax')
 			
 		]

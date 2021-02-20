@@ -14,15 +14,15 @@ from sklearn.model_selection import train_test_split
 
 if __name__ == '__main__':
 	df = pd.read_csv("master.txt", delimiter=';')
-	test = df.to_numpy()
-	X = test[:, 0:len(test[0]) - 1]
-	X.reshape(3, 3379, 5)
-	y = df.iloc[:, len(test[0]) - 1]
+	X = df.iloc[:, 0:len(df.columns) - 1].values
+	y = df.iloc[:, len(df.columns) - 1].values
+	print(X)
 	X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=.30)
+	X_train = tf.reshape(X_train, (15, 473, 5))
 
-	model = keras.Sequential(
-		[
-			layers.LSTM(128)
-		]
-	)
+	# model = layers.LSTM(128)(X_train)
+	# model = layers.Dense(2, activation="softmax")(model)
+	# myModel = keras.Model(X_train, model)
+	# print(model.summary())
+
 

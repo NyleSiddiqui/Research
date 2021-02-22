@@ -13,16 +13,19 @@ from sklearn.model_selection import train_test_split
 
 
 if __name__ == '__main__':
-	df = pd.read_csv("master.txt", delimiter=';')
+	df = pd.read_csv("master.csv")
 	X = df.iloc[:, 0:len(df.columns) - 1].values
 	y = df.iloc[:, len(df.columns) - 1].values
-	print(X)
 	X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=.30)
-	X_train = tf.reshape(X_train, (15, 473, 5))
+	X_train = tf.reshape(X_train, (72, 48, 7))
+	y_train = tf.reshape(y_train, (72, 48, 1))
 
-	# model = layers.LSTM(128)(X_train)
-	# model = layers.Dense(2, activation="softmax")(model)
-	# myModel = keras.Model(X_train, model)
-	# print(model.summary())
+	model = keras.Sequential()
+	model.add(layers.LSTM(128))
+	model.add(layers.Dense(2, input_dim=(72, 128), activation="softmax"))
+	model.build((72, 48, 7))
+	model.summary()
+	model.compile(optimizer='Adam', loss='BinaryCrossentropy')
+	model.fit(X_train, y_train, epochs=2)
 
 

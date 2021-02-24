@@ -7,7 +7,9 @@ global start_location
 global start_switch
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
-SECS = 30
+SECS = 34
+SUBJECT_ID = 1
+SUBJECT_GENDER = 1                                                                                                      # M = 0, F = 1
 global count
 
 def on_move(x, y):
@@ -17,7 +19,7 @@ def on_move(x, y):
 	if start_switch == 0:
 		start_location = (x, y)
 		start_switch += 1
-	print(x, ';', y, ';', -1, ';', -1, ';', start_location[0] - x, ';', start_location[1] - y, ';', 0, ';', 1)
+	print(time.time(), ';', x, ';', y, ';', -1, ';', -1, ';', start_location[0] - x, ';', start_location[1] - y, ';', SUBJECT_GENDER, ';', SUBJECT_ID)
 
 def on_click(x, y, button, pressed):
 	global start
@@ -32,15 +34,15 @@ def on_click(x, y, button, pressed):
 	else:
 		end = time.time()
 		formatted_time = "{:.5f}".format(end-start)
-		print(x, ';', y, ';', button, ';', formatted_time, ';', start_location[0] - x, ';', start_location[1] - y, ';', 0, ';', 1)
+		print(time.time(), ';', x, ';', y, ';', button, ';', formatted_time, ';', start_location[0] - x, ';', start_location[1] - y, ';', SUBJECT_GENDER, ';', SUBJECT_ID)
 		start = time.time()
 
 
 def on_scroll(x, y, dx, dy):
 	if dy > 0:
-		print(x, ';', y, ';', "scroll up", ';', -1, ';', -1, ';', -1,';', 0, ';', 1)
+		print(time.time(),' ;', x, ';', y, ';', 4, ';', -1, ';', -1, ';', -1,';', SUBJECT_GENDER, ';', SUBJECT_ID)
 	else:
-		print(x,';', y, ';', "scroll down", ';', -1, ';', -1, ';', -1,';', 0, ';', 1)
+		print(time.time(), ';', x,';', y, ';', 3, ';', -1, ';', -1, ';', -1,';', SUBJECT_GENDER, ';', SUBJECT_ID)
 		
 def start_screen():
 	running = True
@@ -67,8 +69,7 @@ def start_screen():
 if __name__ == '__main__':
 	count = 0
 	start_screen()
-	sys.stdout = open("Subject0.txt", 'w')
-	print("X; Y; Button Pressed; Time; Distance (X); Distance (Y); Sex; Subject ID")
+	sys.stdout = open(f"Subject{SUBJECT_ID}.txt", 'w')
 	start_switch = 0
 	start = time.time()
 	now = time.time()

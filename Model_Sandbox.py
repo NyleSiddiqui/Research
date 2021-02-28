@@ -1,38 +1,60 @@
 import numpy as np
 import os
+import random
+import time
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '1'                                                                                
 import tensorflow as tf
 import pandas as pd
 import matplotlib as plt
 from tensorflow import keras
 from tensorflow.keras import layers, Sequential
+from tensorflow.keras.layers import LSTM, Dropout, Dense, BatchNormalization
+from tensorflow.keras.callbacks import TensorBoard, ModelCheckpoint
 from sklearn import preprocessing
 from collections import deque
 from sklearn.model_selection import train_test_split
 
 SEQ_LEN = 60
 TIMESTEP = 3
+EPOCHS = 2
+BATCH_SIZE = 10
+NAME = f"SEQ-{SEQ_LEN}-{int(time.time())}"
 
 def preprocess(df):
-	df.drop('Subject ID', 1)
-	for col in df.columns:                                                                                              #Normalize?
-		if  col != "Sex":
-			df[col] = df[col].pct_change()
-			df.dropna(inplace=True)
-			print(col)
-			print(np.nan_to_num(df[col].values))
-			df[col] = preprocessing.scale(np.nan_to_num(df[col].values))
-	df.dropna(inplace=True)
+	for col in df.columns:
+		if  col != "Subject ID":
+			df[col] = df[col].pct_change(fill_method='bfill').fillna(0)
+			# df.dropna(inplace=True)
 	
 	sequential_data = []
 	prev_data = deque(maxlen=SEQ_LEN)
-	# print(df.head)
-	# for c in df.columns:
-	# 	print(c)
+	# targets = np.empty(SEQ_LEN)
+	for i in df.values:
+		# count = 0
+		# for j in i:
+		# 	count += 1
+		# 	if count == 8:
+		# 		targets.
+		# if targets.
+		prev_data.append([n for n in i[:-1]])
+		if len(prev_data) == SEQ_LEN:
+			sequential_data.append([np.array(prev_data), i[-1]])
+	random.shuffle(sequential_data)
+	X = []
+	y = []
+	for seq, target in sequential_data:
+		X.append(seq)
+		y.append(target)
+	return np.array(X), y
 	
 
 
+
+
+
 if __name__ == '__main__':
+	pd.set_option('display.max_columns', None)
+	pd.set_option('display.width', None)
 	df = pd.read_csv("master.csv", skiprows=1, names =["Timestamp", "X", "Y", "Button Pressed", "Time", "DistanceX", "DistanceY", "Sex", "Subject ID"])
 	df.set_index("Timestamp", inplace=True)
 	
@@ -40,27 +62,40 @@ if __name__ == '__main__':
 	last_5pct = times[-int(0.05*len(times))]
 	validation = df[(df.index >= last_5pct)]
 	df = df[(df.index < last_5pct)]
-	
-	preprocess(df)
-	# train_X, train_y = preprocess(df)
-	# validation_X, validation_y = preprocess(df)
-	
-	#
-	# X = df.iloc[:, 0:len(df.columns - 1)].values
-	# y = df.iloc[:, len(df.columns) - 1].values
-	# X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=.30)
-	# print(X_train.shape)
-	# X_train = tf.reshape(X_train, (72, 48, 7))
-	# y_train = tf.reshape(y_train, (72, 48, 1))
-	# print(y_train[0])
-	#
-	# model = keras.Sequential()
-	# model.add(layers.LSTM(128, input_shape=(X_train.shape[1:]), activation='relu', return_sequences=True))
-	# model.add(layers.LSTM(128, activation='relu'))
-	# model.add(layers.Dense(32, activation='relu'))
-	# model.add(layers.Dense(48, activation='softmax'))
-	# opt= tf.keras.optimizers.Adam(lr=1e-3, decay=1e-5)
-	# model.compile(loss='binary_crossentropy', optimizer=opt, metrics=['accuracy'])
-	# model.fit(X_train, y_train, epochs=2, verbose=1)
+	train_X, train_y = preprocess(df)
+	validation_X, validation_y = preprocess(validation)
+	model = Sequential()
+	model.add(LSTM(128, input_shape=(train_X.shape[1:]), return_sequences=True))
+	model.add(Dropout(0.2))
+	model.add(BatchNormalization())
+
+	model.add(LSTM(128, input_shape=(train_X.shape[1:]), return_sequences=True))
+	model.add(Dropout(0.2))
+	model.add(BatchNormalization())
+
+	model.add(LSTM(128, input_shape=(train_X.shape[1:]), return_sequences=True))
+	model.add(Dropout(0.2))
+	model.add(BatchNormalization())
+
+	model.add(Dense(32, activation='relu'))
+	model.add(Dropout(0.2))
+
+	model.add(Dense(2, activation='softmax'))
+
+	opt = tf.keras.optimizers.Adam(lr=1e-3, decay=1e-6)
+
+	model.compile(loss='sparse_categorical_crossentropy',
+	              optimizer=opt,
+	              metrics=['accuracy'])
+	tensorboard = TensorBoard(log_dir=f'logs/{NAME}')
+
+	filepath = "RNN_Final-{epoch:02d}-{{val_acc:.3f}"
+	checkpoint = ModelCheckpoint("models/{}.model".format(filepath, monitor='val_acc', verbose=1, save_best_only=True, mode='max'))
+
+	# history = model.fit(train_X, train_y,
+	#                     epochs=EPOCHS,
+	#                     validation_data=(validation_X, validation_y),
+	#                     callbacks=[tensorboard, checkpoint],
+	#                     verbose=1)
 
 

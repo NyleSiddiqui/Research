@@ -2,8 +2,12 @@ import numpy as np
 import os
 import random
 import time
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '1'                                                                                
+
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '1'
+os.environ['CUDA_VISIBLE_DEVICES'] = "-1"
 import tensorflow as tf
+from tensorflow.python.client import device_lib
+print(device_lib.list_local_devices())
 import pandas as pd
 import matplotlib as plt
 from tensorflow import keras
@@ -27,6 +31,7 @@ def preprocess(df):
 			# df.dropna(inplace=True)
 	
 	sequential_data = []
+	print(df.head(5))
 	prev_data = deque(maxlen=SEQ_LEN)
 	# targets = np.empty(SEQ_LEN)
 	for i in df.values:
@@ -45,7 +50,7 @@ def preprocess(df):
 	for seq, target in sequential_data:
 		X.append(seq)
 		y.append(target)
-	return np.array(X), y
+	return np.array(X), np.array(y)
 	
 
 
@@ -73,7 +78,7 @@ if __name__ == '__main__':
 	model.add(Dropout(0.2))
 	model.add(BatchNormalization())
 
-	model.add(LSTM(128, input_shape=(train_X.shape[1:]), return_sequences=True))
+	model.add(LSTM(128, input_shape=(train_X.shape[1:])))
 	model.add(Dropout(0.2))
 	model.add(BatchNormalization())
 
@@ -92,10 +97,10 @@ if __name__ == '__main__':
 	filepath = "RNN_Final-{epoch:02d}-{{val_acc:.3f}"
 	checkpoint = ModelCheckpoint("models/{}.model".format(filepath, monitor='val_acc', verbose=1, save_best_only=True, mode='max'))
 
-	# history = model.fit(train_X, train_y,
-	#                     epochs=EPOCHS,
-	#                     validation_data=(validation_X, validation_y),
-	#                     callbacks=[tensorboard, checkpoint],
-	#                     verbose=1)
+	history = model.fit(train_X, train_y,
+	                    epochs=EPOCHS,
+	                    validation_data=(validation_X, validation_y),
+	                    callbacks=[tensorboard, checkpoint],
+	                    verbose=1)
 
 

@@ -6,8 +6,6 @@ import time
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '1'
 os.environ['CUDA_VISIBLE_DEVICES'] = "-1"
 import tensorflow as tf
-from tensorflow.python.client import device_lib
-print(device_lib.list_local_devices())
 import pandas as pd
 import matplotlib as plt
 from tensorflow import keras
@@ -16,25 +14,24 @@ from tensorflow.keras.layers import LSTM, Dropout, Dense, BatchNormalization
 from tensorflow.keras.callbacks import TensorBoard, ModelCheckpoint
 from sklearn import preprocessing
 from collections import deque
-from sklearn.model_selection import train_test_split
 
 SEQ_LEN = 60
 TIMESTEP = 3
-EPOCHS = 2
+EPOCHS = 10
 BATCH_SIZE = 10
 NAME = f"SEQ-{SEQ_LEN}-{int(time.time())}"
 
 def preprocess(df):
-	for col in df.columns:
-		if  col != "Subject ID":
-			df[col] = df[col].pct_change(fill_method='bfill').fillna(0)
-			# df.dropna(inplace=True)
+	df = preprocessing.normalize(df.values)
+	# for col in df.columns:
+	# 	if  col != "Subject ID":
+	# 		df[col] = df[col].pct_change().fillna(0)
+	# 		# df.dropna(inplace=True)
 	
 	sequential_data = []
-	print(df.head(5))
 	prev_data = deque(maxlen=SEQ_LEN)
 	# targets = np.empty(SEQ_LEN)
-	for i in df.values:
+	for i in df:
 		# count = 0
 		# for j in i:
 		# 	count += 1
@@ -68,7 +65,11 @@ if __name__ == '__main__':
 	validation = df[(df.index >= last_5pct)]
 	df = df[(df.index < last_5pct)]
 	train_X, train_y = preprocess(df)
+	train_y = train_y.reshape((-1, 1))
 	validation_X, validation_y = preprocess(validation)
+	validation_y = validation_y.reshape((-1, 1))
+
+	
 	model = Sequential()
 	model.add(LSTM(128, input_shape=(train_X.shape[1:]), return_sequences=True))
 	model.add(Dropout(0.2))
@@ -96,11 +97,13 @@ if __name__ == '__main__':
 
 	filepath = "RNN_Final-{epoch:02d}-{{val_acc:.3f}"
 	checkpoint = ModelCheckpoint("models/{}.model".format(filepath, monitor='val_acc', verbose=1, save_best_only=True, mode='max'))
-
+	
+	
+	model.summary()
 	history = model.fit(train_X, train_y,
 	                    epochs=EPOCHS,
 	                    validation_data=(validation_X, validation_y),
-	                    callbacks=[tensorboard, checkpoint],
+	                    # callbacks=[tensorboard, checkpoint],
 	                    verbose=1)
 
 

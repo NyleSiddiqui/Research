@@ -16,17 +16,17 @@ from sklearn import preprocessing
 from collections import deque
 
 SEQ_LEN = 60
-TIMESTEP = 3
 EPOCHS = 10
-BATCH_SIZE = 10
+BATCH_SIZE = 60
 NAME = f"SEQ-{SEQ_LEN}-{int(time.time())}"
 
 def preprocess(df):
-	df = preprocessing.normalize(df.values)
+	df = df.values
+	min_max_scalar = preprocessing.MinMaxScaler()
+	df = min_max_scalar.fit_transform(df)
 	# for col in df.columns:
-	# 	if  col != "Subject ID":
-	# 		df[col] = df[col].pct_change().fillna(0)
-	# 		# df.dropna(inplace=True)
+	# 	if col != "Subject ID":
+	# 		df[col] = preprocessing.normalize([i[:-1] for i in df.values], axis=1)=
 	
 	sequential_data = []
 	prev_data = deque(maxlen=SEQ_LEN)
@@ -42,6 +42,7 @@ def preprocess(df):
 		if len(prev_data) == SEQ_LEN:
 			sequential_data.append([np.array(prev_data), i[-1]])
 	random.shuffle(sequential_data)
+	# print(sequential_data[100:1000])
 	X = []
 	y = []
 	for seq, target in sequential_data:
@@ -65,11 +66,9 @@ if __name__ == '__main__':
 	validation = df[(df.index >= last_5pct)]
 	df = df[(df.index < last_5pct)]
 	train_X, train_y = preprocess(df)
-	train_y = train_y.reshape((-1, 1))
 	validation_X, validation_y = preprocess(validation)
-	validation_y = validation_y.reshape((-1, 1))
 
-	
+
 	model = Sequential()
 	model.add(LSTM(128, input_shape=(train_X.shape[1:]), return_sequences=True))
 	model.add(Dropout(0.2))
@@ -86,7 +85,7 @@ if __name__ == '__main__':
 	model.add(Dense(32, activation='relu'))
 	model.add(Dropout(0.2))
 
-	model.add(Dense(2, activation='softmax'))
+	model.add(Dense(3, activation='softmax'))
 
 	opt = tf.keras.optimizers.Adam(lr=1e-3, decay=1e-6)
 
@@ -97,8 +96,8 @@ if __name__ == '__main__':
 
 	filepath = "RNN_Final-{epoch:02d}-{{val_acc:.3f}"
 	checkpoint = ModelCheckpoint("models/{}.model".format(filepath, monitor='val_acc', verbose=1, save_best_only=True, mode='max'))
-	
-	
+
+
 	model.summary()
 	history = model.fit(train_X, train_y,
 	                    epochs=EPOCHS,

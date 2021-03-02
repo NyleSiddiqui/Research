@@ -7,8 +7,8 @@ global start_location
 global start_switch
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
-SECS = 34
-SUBJECT_ID = 1
+SECS = 540
+SUBJECT_ID = 100
 SUBJECT_GENDER = 1                                                                                                      # M = 0, F = 1
 global count
 
@@ -69,7 +69,7 @@ def start_screen():
 if __name__ == '__main__':
 	count = 0
 	start_screen()
-	sys.stdout = open(f"Subject{SUBJECT_ID}.txt", 'w')
+	sys.stdout = open(f"Subject{SUBJECT_ID}.txt", 'w', buffering=100000)
 	start_switch = 0
 	start = time.time()
 	now = time.time()

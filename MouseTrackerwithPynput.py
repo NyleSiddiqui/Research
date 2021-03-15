@@ -1,0 +1,86 @@
+import pynput
+from pynput import mouse
+import pygame
+import sys
+import time
+global start
+global start_location
+global start_switch
+SCREEN_WIDTH = 800
+SCREEN_HEIGHT = 600
+SECS = 3
+SUBJECT_ID = 100
+SUBJECT_GENDER = 0                                                                                                      # M = 0, F = 1
+global count
+
+def on_move(x, y):
+	global count
+	global start_switch
+	global start_location
+	if start_switch == 0:
+		start_location = (x, y)
+		start_switch += 1
+	print(time.time(), ';', x, ';', y, ';', -1, ';', -1, ';', start_location[0] - x, ';', start_location[1] - y, ';', SUBJECT_GENDER, ';', SUBJECT_ID)
+
+def on_click(x, y, button, pressed):
+	global start
+	if str(button) == "Button.left":
+		button = 0
+	elif str(button) == "Button.right":
+		button = 2
+	else:
+		button = 1
+	end = time.time()
+	formatted_time = "{:.5f}".format(end-start)
+	if pressed:
+		print(time.time(), ';', x, ';', y, ';', button, ';', formatted_time, ';', start_location[0] - x, ';', start_location[1] - y, ';', SUBJECT_GENDER, ';', SUBJECT_ID)
+	start = time.time()
+
+
+def on_scroll(x, y, dx, dy):
+	if dy > 0:
+		print(time.time(),' ;', x, ';', y, ';', 4, ';', -1, ';', -1, ';', -1,';', SUBJECT_GENDER, ';', SUBJECT_ID)
+	else:
+		print(time.time(), ';', x,';', y, ';', 3, ';', -1, ';', -1, ';', -1,';', SUBJECT_GENDER, ';', SUBJECT_ID)
+		
+def start_screen():
+	running = True
+	pygame.init()
+	while running:
+		screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+		font = pygame.font.SysFont('Arial', 25)
+		text = font.render('Click \'START\' to begin', True, (255, 255, 255), (0, 0, 0))
+		text2 = font.render('START', True, (255, 255, 255), (0, 0, 0))
+		textRect2 = text2.get_rect()
+		textRect = text.get_rect()
+		textRect.center = (SCREEN_WIDTH//2, SCREEN_HEIGHT//4)
+		textRect2.center = (SCREEN_WIDTH//2, SCREEN_HEIGHT//1.5)
+		screen.fill((0, 0, 0))
+		screen.blit(text, textRect)
+		screen.blit(text2, textRect2)
+		pygame.display.update()
+		event = pygame.event.wait()
+		if event.type == pygame.QUIT:
+			running = False
+			pygame.quit()
+		elif event.type == pygame.MOUSEBUTTONDOWN:
+			running = False
+			pygame.quit()
+if __name__ == '__main__':
+	count = 0
+	# start_screen()
+	sys.stdout = open(f"{SUBJECT_ID}.txt", "w")
+	start_switch = 0
+	start = time.time()
+	now = time.time()
+	end = now + SECS
+	flag = True
+	while flag:
+		if time.time() < end:
+			with mouse.Listener(on_move=on_move, on_click=on_click, on_scroll=on_scroll) as listener:
+				listener.join()
+		else:
+			flag = False
+	listener.stop()
+	sys.stdout.close()
+

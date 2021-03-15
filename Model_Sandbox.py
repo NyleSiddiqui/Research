@@ -7,7 +7,6 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '1'
 os.environ['CUDA_VISIBLE_DEVICES'] = "-1"
 import tensorflow as tf
 import pandas as pd
-import matplotlib as plt
 from tensorflow import keras
 from tensorflow.keras import layers, Sequential
 from tensorflow.keras.layers import LSTM, Dropout, Dense, BatchNormalization
@@ -58,7 +57,7 @@ def preprocess(df):
 if __name__ == '__main__':
 	pd.set_option('display.max_columns', None)
 	pd.set_option('display.width', None)
-	df = pd.read_csv("master.csv", skiprows=1, names =["Timestamp", "X", "Y", "Button Pressed", "Time", "DistanceX", "DistanceY", "Sex", "Subject ID"])
+	df = pd.read_csv("master2.csv", skiprows=1, names =["Timestamp", "X", "Y", "Button Pressed", "Time", "DistanceX", "DistanceY", "Sex", "Subject ID"])
 	df.set_index("Timestamp", inplace=True)
 	
 	times = sorted(df.index.values)
@@ -77,10 +76,20 @@ if __name__ == '__main__':
 	model.add(LSTM(128, input_shape=(train_X.shape[1:]), return_sequences=True))
 	model.add(Dropout(0.2))
 	model.add(BatchNormalization())
+	
+	model.add(LSTM(128, input_shape=(train_X.shape[1:]), return_sequences=True))
+	model.add(Dropout(0.2))
+	model.add(BatchNormalization())
+	
+	model.add(LSTM(128, input_shape=(train_X.shape[1:]), return_sequences=True))
+	model.add(Dropout(0.2))
+	model.add(BatchNormalization())
 
 	model.add(LSTM(128, input_shape=(train_X.shape[1:])))
 	model.add(Dropout(0.2))
 	model.add(BatchNormalization())
+	
+	
 
 	model.add(Dense(32, activation='relu'))
 	model.add(Dropout(0.2))

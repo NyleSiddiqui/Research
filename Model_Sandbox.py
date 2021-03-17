@@ -3,7 +3,7 @@ import os
 import random
 import time
 
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '1'
+# os.environ['TF_CPP_MIN_LOG_LEVEL'] = '1'
 os.environ['CUDA_VISIBLE_DEVICES'] = "-1"
 import tensorflow as tf
 import pandas as pd
@@ -16,7 +16,7 @@ from collections import deque
 
 SEQ_LEN = 60
 EPOCHS = 10
-BATCH_SIZE = 60
+BATCH_SIZE = 2
 NAME = f"SEQ-{SEQ_LEN}-{int(time.time())}"
 
 def preprocess(df):
@@ -41,7 +41,7 @@ def preprocess(df):
 		if len(prev_data) == SEQ_LEN:
 			sequential_data.append([np.array(prev_data), i[-1]])
 	random.shuffle(sequential_data)
-	# print(sequential_data[100:1000])
+	print(sequential_data[100:102])
 	X = []
 	y = []
 	for seq, target in sequential_data:
@@ -55,9 +55,10 @@ def preprocess(df):
 
 
 if __name__ == '__main__':
+
 	pd.set_option('display.max_columns', None)
 	pd.set_option('display.width', None)
-	df = pd.read_csv("master2.csv", skiprows=1, names =["Timestamp", "X", "Y", "Button Pressed", "Time", "DistanceX", "DistanceY", "Sex", "Subject ID"])
+	df = pd.read_csv("master3.csv", skiprows=1, names =["Timestamp", "X", "Y", "Button Pressed", "Time", "DistanceX", "DistanceY", "Sex", "Subject ID"])
 	df.set_index("Timestamp", inplace=True)
 	
 	times = sorted(df.index.values)
@@ -69,10 +70,18 @@ if __name__ == '__main__':
 
 
 	model = Sequential()
-	model.add(LSTM(128, input_shape=(train_X.shape[1:]), return_sequences=True))
+	model.add(LSTM(128, input_shape=(train_X.shape[1:]), return_sequences=True, activation='tanh', recurrent_activation='sigmoid', recurrent_dropout=0,  unroll=False, use_bias=True))
 	model.add(Dropout(0.2))
 	model.add(BatchNormalization())
 
+	model.add(LSTM(128, input_shape=(train_X.shape[1:]), return_sequences=True))
+	model.add(Dropout(0.2))
+	model.add(BatchNormalization())
+	
+	model.add(LSTM(128, input_shape=(train_X.shape[1:]), return_sequences=True))
+	model.add(Dropout(0.2))
+	model.add(BatchNormalization())
+	
 	model.add(LSTM(128, input_shape=(train_X.shape[1:]), return_sequences=True))
 	model.add(Dropout(0.2))
 	model.add(BatchNormalization())
@@ -94,7 +103,7 @@ if __name__ == '__main__':
 	model.add(Dense(32, activation='relu'))
 	model.add(Dropout(0.2))
 
-	model.add(Dense(3, activation='softmax'))
+	model.add(Dense(2, activation='softmax'))
 
 	opt = tf.keras.optimizers.Adam(lr=1e-3, decay=1e-6)
 
@@ -110,6 +119,7 @@ if __name__ == '__main__':
 	model.summary()
 	history = model.fit(train_X, train_y,
 	                    epochs=EPOCHS,
+	                    batch_size=BATCH_SIZE,
 	                    validation_data=(validation_X, validation_y),
 	                    # callbacks=[tensorboard, checkpoint],
 	                    verbose=1)

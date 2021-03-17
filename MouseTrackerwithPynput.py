@@ -8,10 +8,12 @@ global start_location
 global start_switch
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
-SECS = 3
-SUBJECT_ID = 100
-SUBJECT_GENDER = 0                                                                                                      # M = 0, F = 1
+SECS = 305
+SUBJECT_ID = 1
+SUBJECT_GENDER = 1                                                                                                      # M = 0, F = 1
 global count
+global drag
+
 
 def on_move(x, y):
 	global count
@@ -20,10 +22,15 @@ def on_move(x, y):
 	if start_switch == 0:
 		start_location = (x, y)
 		start_switch += 1
-	print(time.time(), ';', x, ';', y, ';', -1, ';', -1, ';', start_location[0] - x, ';', start_location[1] - y, ';', SUBJECT_GENDER, ';', SUBJECT_ID)
+	print(time.time(), ';', x, ';', y, ';', -1, ';', -1, ';', start_location[0] - x, ';', start_location[1] - y, ';',
+	      SUBJECT_GENDER, ';', SUBJECT_ID)
+	listener.stop()
+
+
 
 def on_click(x, y, button, pressed):
 	global start
+	global drag
 	if str(button) == "Button.left":
 		button = 0
 	elif str(button) == "Button.right":
@@ -31,18 +38,42 @@ def on_click(x, y, button, pressed):
 	else:
 		button = 1
 	end = time.time()
-	formatted_time = "{:.5f}".format(end-start)
+	formatted_time = "{:.5f}".format(end - start)
 	if pressed:
-		print(time.time(), ';', x, ';', y, ';', button, ';', formatted_time, ';', start_location[0] - x, ';', start_location[1] - y, ';', SUBJECT_GENDER, ';', SUBJECT_ID)
+		drag = time.time()
+		print(time.time(), ';', x, ';', y, ';', button, ';', formatted_time, ';', start_location[0] - x, ';',
+		      start_location[1] - y, ';', SUBJECT_GENDER, ';', SUBJECT_ID)
+	if not pressed:
+		if button == 0:
+			release = 5
+		elif button == 2:
+			release = 6
+		else:
+			release = 7
+		try:
+			formatted_time = "{:.5f}".format(time.time() - drag)
+			print(time.time(), ';', x, ';', y, ';', release, ';', formatted_time, ';', start_location[0] - x, ';',
+			      start_location[1] - y, ';', SUBJECT_GENDER, ';', SUBJECT_ID)
+		except NameError:
+			click = time.time()
+			print(time.time(), ';', x, ';', y, ';', button, ';', formatted_time, ';', start_location[0] - x, ';',
+			      start_location[1] - y, ';', SUBJECT_GENDER, ';', SUBJECT_ID)
+			formatted_time = "{:.5f}".format(time.time() - click)
+			print(time.time(), ';', x, ';', y, ';', release, ';', formatted_time, ';', start_location[0] - x, ';',
+			      start_location[1] - y, ';', SUBJECT_GENDER, ';', SUBJECT_ID)
 	start = time.time()
+	listener.stop()
 
 
 def on_scroll(x, y, dx, dy):
 	if dy > 0:
-		print(time.time(),' ;', x, ';', y, ';', 4, ';', -1, ';', -1, ';', -1,';', SUBJECT_GENDER, ';', SUBJECT_ID)
+		print(time.time(), ' ;', x, ';', y, ';', 4, ';', -1, ';', -1, ';', -1, ';', SUBJECT_GENDER, ';', SUBJECT_ID)
 	else:
-		print(time.time(), ';', x,';', y, ';', 3, ';', -1, ';', -1, ';', -1,';', SUBJECT_GENDER, ';', SUBJECT_ID)
-		
+		print(time.time(), ';', x, ';', y, ';', 3, ';', -1, ';', -1, ';', -1, ';', SUBJECT_GENDER, ';', SUBJECT_ID)
+	listener.stop()
+
+
+
 def start_screen():
 	running = True
 	pygame.init()
@@ -53,8 +84,8 @@ def start_screen():
 		text2 = font.render('START', True, (255, 255, 255), (0, 0, 0))
 		textRect2 = text2.get_rect()
 		textRect = text.get_rect()
-		textRect.center = (SCREEN_WIDTH//2, SCREEN_HEIGHT//4)
-		textRect2.center = (SCREEN_WIDTH//2, SCREEN_HEIGHT//1.5)
+		textRect.center = (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 4)
+		textRect2.center = (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 1.5)
 		screen.fill((0, 0, 0))
 		screen.blit(text, textRect)
 		screen.blit(text2, textRect2)
@@ -66,21 +97,19 @@ def start_screen():
 		elif event.type == pygame.MOUSEBUTTONDOWN:
 			running = False
 			pygame.quit()
+
+
 if __name__ == '__main__':
 	count = 0
 	# start_screen()
-	sys.stdout = open(f"{SUBJECT_ID}.txt", "w")
+	# sys.stdout = open(f"Subject{SUBJECT_ID}.txt", "w")
 	start_switch = 0
 	start = time.time()
 	now = time.time()
 	end = now + SECS
 	flag = True
-	while flag:
-		if time.time() < end:
-			with mouse.Listener(on_move=on_move, on_click=on_click, on_scroll=on_scroll) as listener:
-				listener.join()
-		else:
-			flag = False
+	while time.time() < end:
+		with mouse.Listener(on_move=on_move, on_click=on_click, on_scroll=on_scroll) as listener:
+			listener.join()
 	listener.stop()
-	sys.stdout.close()
-
+	# sys.stdout.close()

@@ -29,7 +29,8 @@ def on_move(x, y):
 		prev_x = start_location[0]
 		m_end = time.time() - 1e-2
 	speed = (abs(prev_x - x))/(time.time() - m_end)
-	print(time.time(), ';', x, ';', y, ';', -1, ';', -1, ';', start_location[0] - x, ';', start_location[1] - y, ';', speed, ';',
+	acc = (time.time() - m_end)/(speed + 1e-5)
+	print(time.time(), ';', x, ';', y, ';', -1, ';', -1, ';', start_location[0] - x, ';', start_location[1] - y, ';', speed, ';', acc, ';',
 	      SUBJECT_GENDER, ';', SUBJECT_ID)
 	prev_x = x
 	m_end = time.time()

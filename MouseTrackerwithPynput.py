@@ -6,24 +6,33 @@ import time
 global start
 global start_location
 global start_switch
+global prev_x
+global m_end
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
-SECS = 305
-SUBJECT_ID = 1
-SUBJECT_GENDER = 1                                                                                                      # M = 0, F = 1
+SECS = 480
+SUBJECT_ID = 2
+SUBJECT_GENDER = 0                                                                                                      # M = 0, F = 1
 global count
 global drag
 
 
 def on_move(x, y):
+	global prev_x
+	global m_end
 	global count
 	global start_switch
 	global start_location
 	if start_switch == 0:
 		start_location = (x, y)
 		start_switch += 1
-	print(time.time(), ';', x, ';', y, ';', -1, ';', -1, ';', start_location[0] - x, ';', start_location[1] - y, ';',
+		prev_x = start_location[0]
+		m_end = time.time() - 1e-2
+	speed = (abs(prev_x - x))/(time.time() - m_end)
+	print(time.time(), ';', x, ';', y, ';', -1, ';', -1, ';', start_location[0] - x, ';', start_location[1] - y, ';', speed, ';',
 	      SUBJECT_GENDER, ';', SUBJECT_ID)
+	prev_x = x
+	m_end = time.time()
 	listener.stop()
 
 
@@ -42,7 +51,7 @@ def on_click(x, y, button, pressed):
 	if pressed:
 		drag = time.time()
 		print(time.time(), ';', x, ';', y, ';', button, ';', formatted_time, ';', start_location[0] - x, ';',
-		      start_location[1] - y, ';', SUBJECT_GENDER, ';', SUBJECT_ID)
+		      start_location[1] - y, ';', -1, ';', SUBJECT_GENDER, ';', SUBJECT_ID)
 	if not pressed:
 		if button == 0:
 			release = 5
@@ -53,23 +62,23 @@ def on_click(x, y, button, pressed):
 		try:
 			formatted_time = "{:.5f}".format(time.time() - drag)
 			print(time.time(), ';', x, ';', y, ';', release, ';', formatted_time, ';', start_location[0] - x, ';',
-			      start_location[1] - y, ';', SUBJECT_GENDER, ';', SUBJECT_ID)
+			      start_location[1] - y, ';', -1, ';',  SUBJECT_GENDER, ';', SUBJECT_ID)
 		except NameError:
 			click = time.time()
 			print(time.time(), ';', x, ';', y, ';', button, ';', formatted_time, ';', start_location[0] - x, ';',
-			      start_location[1] - y, ';', SUBJECT_GENDER, ';', SUBJECT_ID)
+			      start_location[1] - y, ';', -1, ';',  SUBJECT_GENDER, ';', SUBJECT_ID)
 			formatted_time = "{:.5f}".format(time.time() - click)
 			print(time.time(), ';', x, ';', y, ';', release, ';', formatted_time, ';', start_location[0] - x, ';',
-			      start_location[1] - y, ';', SUBJECT_GENDER, ';', SUBJECT_ID)
+			      start_location[1] - y, ';', -1, ';',  SUBJECT_GENDER, ';', SUBJECT_ID)
 	start = time.time()
 	listener.stop()
 
 
 def on_scroll(x, y, dx, dy):
 	if dy > 0:
-		print(time.time(), ' ;', x, ';', y, ';', 4, ';', -1, ';', -1, ';', -1, ';', SUBJECT_GENDER, ';', SUBJECT_ID)
+		print(time.time(), ' ;', x, ';', y, ';', 4, ';', -1, ';', -1, ';', -1, ';', -1, ';',  SUBJECT_GENDER, ';', SUBJECT_ID)
 	else:
-		print(time.time(), ';', x, ';', y, ';', 3, ';', -1, ';', -1, ';', -1, ';', SUBJECT_GENDER, ';', SUBJECT_ID)
+		print(time.time(), ';', x, ';', y, ';', 3, ';', -1, ';', -1, ';', -1, ';', -1, ';',  SUBJECT_GENDER, ';', SUBJECT_ID)
 	listener.stop()
 
 

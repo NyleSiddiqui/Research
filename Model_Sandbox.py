@@ -3,7 +3,7 @@ import os
 import random
 import time
 
-# os.environ['TF_CPP_MIN_LOG_LEVEL'] = '1'
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '1'
 os.environ['CUDA_VISIBLE_DEVICES'] = "-1"
 import tensorflow as tf
 import pandas as pd
@@ -16,17 +16,21 @@ from collections import deque
 
 SEQ_LEN = 60
 EPOCHS = 10
-BATCH_SIZE = 2
+BATCH_SIZE = 60
 NAME = f"SEQ-{SEQ_LEN}-{int(time.time())}"
 
 def preprocess(df):
-	df = df.values
-	min_max_scalar = preprocessing.MinMaxScaler()
-	df = min_max_scalar.fit_transform(df)
-	# for col in df.columns:
-	# 	if col != "Subject ID":
-	# 		df[col] = preprocessing.normalize([i[:-1] for i in df.values], axis=1)=
+	# df = df.values
+	# norm = df[:-1]
+	# print(norm[0:2])
+	# min_max_scalar = preprocessing.MinMaxScaler()
+	# df = min_max_scalar.fit_transform(df)
+	for col in df.columns:
+		if col != "Subject ID":
+			df[col] = preprocessing.normalize([i[:-1] for i in df.values], axis=1)
 	
+	df = df.values[0:262282]
+	print(df[-1])
 	sequential_data = []
 	prev_data = deque(maxlen=SEQ_LEN)
 	# targets = np.empty(SEQ_LEN)
@@ -41,7 +45,6 @@ def preprocess(df):
 		if len(prev_data) == SEQ_LEN:
 			sequential_data.append([np.array(prev_data), i[-1]])
 	random.shuffle(sequential_data)
-	print(sequential_data[100:102])
 	X = []
 	y = []
 	for seq, target in sequential_data:
@@ -58,7 +61,7 @@ if __name__ == '__main__':
 
 	pd.set_option('display.max_columns', None)
 	pd.set_option('display.width', None)
-	df = pd.read_csv("master3.csv", skiprows=1, names =["Timestamp", "X", "Y", "Button Pressed", "Time", "DistanceX", "DistanceY", "Sex", "Subject ID"])
+	df = pd.read_csv("rsdata.csv", skiprows=1, names =["Timestamp", "X", "Y", "Button Pressed", "Time", "DistanceX", "DistanceY", "Sex", "Subject ID"])
 	df.set_index("Timestamp", inplace=True)
 	
 	times = sorted(df.index.values)
@@ -70,7 +73,7 @@ if __name__ == '__main__':
 
 
 	model = Sequential()
-	model.add(LSTM(128, input_shape=(train_X.shape[1:]), return_sequences=True, activation='tanh', recurrent_activation='sigmoid', recurrent_dropout=0,  unroll=False, use_bias=True))
+	model.add(LSTM(128, input_shape=(train_X.shape[1:]), return_sequences=True))#, activation='tanh', recurrent_activation='sigmoid', recurrent_dropout=0,  unroll=False, use_bias=True))
 	model.add(Dropout(0.2))
 	model.add(BatchNormalization())
 
@@ -107,7 +110,7 @@ if __name__ == '__main__':
 
 	opt = tf.keras.optimizers.Adam(lr=1e-3, decay=1e-6)
 
-	model.compile(loss='sparse_categorical_crossentropy',
+	model.compile(loss='binary_crossentropy',
 	              optimizer=opt,
 	              metrics=['accuracy'])
 	tensorboard = TensorBoard(log_dir=f'logs/{NAME}')

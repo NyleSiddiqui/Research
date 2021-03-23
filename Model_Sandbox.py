@@ -29,8 +29,7 @@ def preprocess(df):
 		if col != "Subject ID":
 			df[col] = preprocessing.normalize([i[:-1] for i in df.values], axis=1)
 	
-	df = df.values[0:262282]
-	print(df[-1])
+	df = df.values
 	sequential_data = []
 	prev_data = deque(maxlen=SEQ_LEN)
 	# targets = np.empty(SEQ_LEN)
@@ -61,7 +60,7 @@ if __name__ == '__main__':
 
 	pd.set_option('display.max_columns', None)
 	pd.set_option('display.width', None)
-	df = pd.read_csv("rsdata.csv", skiprows=1, names =["Timestamp", "X", "Y", "Button Pressed", "Time", "DistanceX", "DistanceY", "Sex", "Subject ID"])
+	df = pd.read_csv("collected_test.csv", skiprows=1, names =["Timestamp", "X", "Y", "Button Pressed", "Time", "DistanceX", "DistanceY", "Speed", "Acceleration", "Sex", "Subject ID"])
 	df.set_index("Timestamp", inplace=True)
 	
 	times = sorted(df.index.values)
@@ -110,7 +109,7 @@ if __name__ == '__main__':
 
 	opt = tf.keras.optimizers.Adam(lr=1e-3, decay=1e-6)
 
-	model.compile(loss='binary_crossentropy',
+	model.compile(loss='sparse_categorical_crossentropy',
 	              optimizer=opt,
 	              metrics=['accuracy'])
 	tensorboard = TensorBoard(log_dir=f'logs/{NAME}')

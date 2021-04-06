@@ -4,7 +4,7 @@ import random
 import time
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '1'
-os.environ['CUDA_VISIBLE_DEVICES'] = "-1"
+
 import tensorflow as tf
 import pandas as pd
 from tensorflow import keras
@@ -57,22 +57,21 @@ def preprocess(df):
 
 
 if __name__ == '__main__':
-
 	pd.set_option('display.max_columns', None)
 	pd.set_option('display.width', None)
-	df = pd.read_csv("collected_test.csv", skiprows=1, names =["Timestamp", "X", "Y", "Button Pressed", "Time", "DistanceX", "DistanceY", "Speed", "Acceleration", "Sex", "Subject ID"])
+	df = pd.read_csv("22master.csv", skiprows=1, names =["Timestamp", "X", "Y", "Button Pressed", "Time", "DistanceX", "DistanceY", "Speed", "Acceleration", "Sex", "Subject ID"])
 	df.set_index("Timestamp", inplace=True)
 	
 	times = sorted(df.index.values)
-	last_5pct = times[-int(0.05*len(times))]
-	validation = df[(df.index >= last_5pct)]
-	df = df[(df.index < last_5pct)]
+	split = times[-int(0.1*len(times))]
+	validation = df[(df.index >= split)]
+	df = df[(df.index < split)]
 	train_X, train_y = preprocess(df)
 	validation_X, validation_y = preprocess(validation)
 
 
 	model = Sequential()
-	model.add(LSTM(128, input_shape=(train_X.shape[1:]), return_sequences=True))#, activation='tanh', recurrent_activation='sigmoid', recurrent_dropout=0,  unroll=False, use_bias=True))
+	model.add(LSTM(256, input_shape=(train_X.shape[1:]), return_sequences=True))#, activation='tanh', recurrent_activation='sigmoid', recurrent_dropout=0,  unroll=False, use_bias=True))
 	model.add(Dropout(0.2))
 	model.add(BatchNormalization())
 
@@ -99,23 +98,24 @@ if __name__ == '__main__':
 	model.add(LSTM(128, input_shape=(train_X.shape[1:])))
 	model.add(Dropout(0.2))
 	model.add(BatchNormalization())
-	
-	
 
+	model.add(Dense(64, activation='relu'))
+	model.add(Dropout(0.2))
+	
 	model.add(Dense(32, activation='relu'))
 	model.add(Dropout(0.2))
 
-	model.add(Dense(2, activation='softmax'))
+	model.add(Dense(4, activation='softmax'))
 
 	opt = tf.keras.optimizers.Adam(lr=1e-3, decay=1e-6)
 
 	model.compile(loss='sparse_categorical_crossentropy',
 	              optimizer=opt,
 	              metrics=['accuracy'])
-	tensorboard = TensorBoard(log_dir=f'logs/{NAME}')
+	# tensorboard = TensorBoard(log_dir=f'logs/{NAME}')
 
 	filepath = "RNN_Final-{epoch:02d}-{{val_acc:.3f}"
-	checkpoint = ModelCheckpoint("models/{}.model".format(filepath, monitor='val_acc', verbose=1, save_best_only=True, mode='max'))
+	# checkpoint = ModelCheckpoint("models/{}.model".format(filepath, monitor='val_acc', verbose=1, save_best_only=True, mode='max'))
 
 
 	model.summary()
